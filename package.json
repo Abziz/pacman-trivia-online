@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "export NODE_ENV=development || set NODE_ENV=development&& nodemon --watch server/src server/src/index.js",
 		"start": "node server/src",
-		"lint": "eslint server/src client/src"
+		"lint": "eslint server/src client/src shared/src"
 	},
 	"keywords": [],
 	"author": "",

@@ -3,11 +3,10 @@ import { CONFIG } from './constants';
 import { BootScene } from './scenes/BootScene';
 import { GameScene } from './scenes/GameScene';
 import { socket } from './socket';
-import { CLIENT_EVENTS, SERVER_EVENTS } from '../../shared/socket-events';
-console.log({ 'socket.id': socket.id });
+import { CLIENT_EVENTS, SERVER_EVENTS } from '../../shared/src/socket-events';
+
 socket.on('connect', () => {
-	console.log({ 'socket.id': socket.id });
-	socket.emit(CLIENT_EVENTS.GREET, { message: 'Hi server!', name: 'Tal' });
+	socket.emit(CLIENT_EVENTS.GREET, { message: 'Valar morghulis', name: 'John' });
 });
 socket.on(SERVER_EVENTS.GREET_BACK, ({ message }) => {
 	console.warn(message);

@@ -3,7 +3,7 @@ const app = express(); // instantiate an express application
 const server = require('http').Server(app); // create a server from the express app
 const io = require('socket.io')(server); // integrate socket.io with our server
 const Bundler = require('parcel-bundler'); // parcel bundler
-const { CLIENT_EVENTS, SERVER_EVENTS } = require('../../shared/socket-events');
+const { CLIENT_EVENTS, SERVER_EVENTS } = require('../../shared/src/socket-events');
 const bodyParser = require('body-parser'); // body-parser
 const env = process.env.NODE_ENV; // figure out the environment
 const port = process.env.PORT || 3000; // use environment PORT or 3000
@@ -35,7 +35,8 @@ const items = [
 ];
 api.get('/items', (req, res) => {
 	res.json(items);
-}).get('/items/:id', (req, res) => {
+});
+api.get('/items/:id', (req, res) => {
 	const { id } = req.params;
 	const item = items.find(item => item.id == id);
 	if (!item) {
@@ -43,12 +44,14 @@ api.get('/items', (req, res) => {
 		return;
 	}
 	res.json(item);
-}).post('/items', (req, res) => {
+});
+api.post('/items', (req, res) => {
 	const { name } = req.body;
 	const item = { id: nextItemId++, name };
 	items.push(item);
 	res.json(item);
-}).put('/items/:id', (req, res) => {
+});
+api.put('/items/:id', (req, res) => {
 	const { id } = req.params;
 	const { name } = req.body;
 	const item = items.find(item => item.id == id);
@@ -59,7 +62,8 @@ api.get('/items', (req, res) => {
 	}
 	item.name = name;
 	res.json(item);
-}).delete('/items/:id', (req, res) => {
+});
+api.delete('/items/:id', (req, res) => {
 	const { id } = req.params;
 	const index = items.findIndex(item => item.id == id);
 	if (index === -1) {
@@ -75,8 +79,8 @@ io.on('connection', function (socket) {
 	//client connected to our app setup event listeners
 	console.log(`socket:${socket.id} connected`);
 	socket.on(CLIENT_EVENTS.GREET, ({ name, message }) => {
-		console.log(`${name} says ${message}`);
-		socket.emit(SERVER_EVENTS.GREET_BACK, { message: `Hi ${name}, enjoy the game` });
+		console.log(`${name} says: ${message}`);
+		socket.emit(SERVER_EVENTS.GREET_BACK, { message: `Valar dohaeris, ${name}` });
 	});
 
 	// do stuff when client disconnects
