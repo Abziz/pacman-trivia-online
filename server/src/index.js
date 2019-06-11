@@ -12,7 +12,7 @@ const api = express.Router();
 /* create a bundler and configure it */
 const bundler = new Bundler('client/src/index.html', {
 	outDir: 'client/dist', // where to put our bundled files
-	minify: true, // reduce the size of our bundled files
+	minify: false, // reduce the size of our bundled files
 	watch: env === 'development', // watch file changes only if we're in development
 	sourceMaps: env === 'development'
 });

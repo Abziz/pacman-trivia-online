@@ -21,6 +21,7 @@ new Phaser.Game({
 	scene: [BootScene, GameScene],
 	dom: { createContainer: true },
 	physics: {
+		default: 'arcade',
 		arcade: {
 			debug: true,
 		}
