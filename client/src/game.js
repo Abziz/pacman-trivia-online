@@ -13,7 +13,7 @@ socket.on(SERVER_EVENTS.GREET_BACK, ({ message }) => {
 });
 
 new Phaser.Game({
-	type: Phaser.WEBGL,
+	type: Phaser.CANVAS,
 	width: CONFIG.WIDTH,
 	height: CONFIG.HEIGHT,
 	parent: 'body',

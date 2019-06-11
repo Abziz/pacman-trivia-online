@@ -19,17 +19,27 @@ export class GameScene extends Phaser.Scene {
 		this.backgroundLayer = this.level.createStaticLayer('background', this.levelTileset);
 		this.wallsLayer = this.level.createStaticLayer('walls', this.levelTileset);
 		this.wallsLayer.setCollisionByProperty({ wall: true });
+		this.players = [
+			new Pacman(this, this.input.keyboard.addKeys({ up: 'UP', down: 'DOWN', right: 'RIGHT', left: 'LEFT' })),
+			new Pacman(this, this.input.keyboard.addKeys({ up: 'W', down: 'S', right: 'D', left: 'A' }))
+		];
 
-		this.player = new Pacman(this, this.input.keyboard.addKeys({ up: 'UP', down: 'DOWN', right: 'RIGHT', left: 'LEFT' }));
-		this.player2 = new Pacman(this, this.input.keyboard.addKeys({ up: 'W', down: 'S', right: 'D', left: 'A' }));
-		this.player2.setTint(0xff0000);
-		this.ghost = new Ghost(this);
-		this.physics.add.collider([this.player, this.player2, this.ghost], this.wallsLayer);
+		this.ghosts = [new Ghost(this)];
+		// add a collider between players/ghosts and walls
+		this.physics.add.collider([...this.players, ...this.ghosts], this.wallsLayer);
+		//check if ghosts are touching the players
+		this.physics.add.overlap(this.ghosts, this.players, (g, p) => {
+			if (Math.abs(p.body.overlapX) > 3 || Math.abs(p.body.overlapY) > 3) {
+				console.log('touch');
+			} else {
+				console.log('allmost');
+			}
+		});
 	}
 	update() {
-		this.physics.world.wrap([this.player, this.player2, this.ghost], CONFIG.FRAME_SIZE / 2);
-		this.player.move(this.wallsLayer);
-		this.player2.move(this.wallsLayer);
-		this.ghost.move(this.wallsLayer);
+		this.physics.world.wrap([...this.players, ...this.ghosts], CONFIG.FRAME_SIZE / 2);
+		this.players.forEach(p => p.move(this.wallsLayer));
+		//	this.player2.move(this.wallsLayer);
+		this.ghosts.forEach(g => g.move(this.wallsLayer));
 	}
 }
