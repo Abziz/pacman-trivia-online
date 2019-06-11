@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { SCENES, CONFIG } from '../constants';
+import { SCENES, CONFIG, SPRITES, TILESETS, TILEMAPS } from '../constants';
 
 export class BootScene extends Phaser.Scene {
 
@@ -15,7 +15,12 @@ export class BootScene extends Phaser.Scene {
 		this.load.on('progress', (value) => {
 			this.percentText.setText(parseInt(value * 100) + '%');
 		});
-
+		this.load.spritesheet(SPRITES.PACMAN, '/assets/sprites/pacman.png', { frameHeight: 32, frameWidth: 32 });
+		this.load.spritesheet(SPRITES.GHOST, '/assets/sprites/blinky.png', { frameHeight: 32, frameWidth: 32 });
+		this.load.image(TILESETS.POKEMON, '/assets/tilesets/pokemon_32x32.png');
+		this.load.tilemapTiledJSON(TILEMAPS.LEVEL, '/assets/tilemaps/level.json');
+		//this.load.image(TILESETS.LEVEL, '/assets/maps/pacman_tiles.png');
+		//this.load.image(TILESETS.PACMAN, '/assets/maps/pokemon_tileset.png');
 		//this.load.image('PADDLE_SPRITE', 'assets/paddle.png');
 		//this.load.spritesheet('BALL_SPRITE', 'assets/ball.png', { frameWidth: 695, frameHeight: 673 });
 		//this.load.html('REGISTER_FORM_HTML', '/assets/dom/register-form.html');

@@ -13,7 +13,7 @@ socket.on(SERVER_EVENTS.GREET_BACK, ({ message }) => {
 });
 
 new Phaser.Game({
-	type: Phaser.CANVAS,
+	type: Phaser.WEBGL,
 	width: CONFIG.WIDTH,
 	height: CONFIG.HEIGHT,
 	parent: 'body',
@@ -21,6 +21,7 @@ new Phaser.Game({
 	scene: [BootScene, GameScene],
 	dom: { createContainer: true },
 	physics: {
+		default: 'arcade',
 		arcade: {
 			debug: true,
 		}
