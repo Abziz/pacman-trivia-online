@@ -1,16 +1,17 @@
 import Phaser from 'phaser';
-import { SPRITES, ANIMATIONS, DIRECTIONS } from '../constants';
+import { SPRITES, ANIMATIONS, DIRECTIONS, CONFIG } from '../constants';
 
 
 export class Pacman extends Phaser.GameObjects.Sprite {
-	constructor(scene, inputs, x = 48, y = 48) {
-		super(scene, x, y, SPRITES.PACMAN, 3);
+
+	constructor(scene, x = 1, y = 1, inputs) {
+		super(scene, 32 * x + 16, 32 * y + 16, SPRITES.PACMAN, 3);
 		this.scene.add.existing(this); // add our sprite to the scene
 		this.scene.physics.world.enable(this); // add physics to our sprite
 		this.index = Pacman.Count++;
 		this.inputs = inputs;
 		this.body.setVelocity(0, 0);
-		this.animation = scene.anims.create({
+		this.animation = this.scene.anims.create({
 			key: `${ANIMATIONS.PACMAN}_${Pacman.Count}`,
 			frames: scene.anims.generateFrameNumbers(SPRITES.PACMAN, { frames: [3, 2, 1, 0] }),
 			frameRate: 12,
@@ -18,6 +19,7 @@ export class Pacman extends Phaser.GameObjects.Sprite {
 			repeat: -1,
 		});
 		this.anims.play(this.animation);
+		this.animation.pause();
 
 	}
 
@@ -42,27 +44,28 @@ export class Pacman extends Phaser.GameObjects.Sprite {
 		// check if a key is down and the tile in that direction is not a wall
 		if (up.isDown && neighbors[DIRECTIONS.UP] == null) {
 			this.turn(DIRECTIONS.UP, current, neighbors.up);
-			this.animation.resume();
-
 		}
 		else if (down.isDown && neighbors[DIRECTIONS.DOWN] == null) {
 			this.turn(DIRECTIONS.DOWN, current, neighbors.down);
-			this.animation.resume();
 		}
 		else if (left.isDown && neighbors[DIRECTIONS.LEFT] == null) {
 			this.turn(DIRECTIONS.LEFT, current, neighbors.left);
-			this.animation.resume();
 		}
 		else if (right.isDown && neighbors[DIRECTIONS.RIGHT] == null) {
 			this.turn(DIRECTIONS.RIGHT, current, neighbors.right);
-			this.animation.resume();
 		}
-
-		// if we try to move forward and there's a wall in front stop stop the animation
-		if (this.body.onFloor() || this.body.onCeiling() || this.body.onWall()) {
+		this.playAnimation();
+		this.updateVelocity();
+	}
+	playAnimation() {
+		if (this.body.blocked.none) {
+			this.animation.resume();
+		} else {
 			this.animation.pause();
 		}
-		this.scene.physics.velocityFromAngle(this.angle, -128, this.body.velocity);
+	}
+	updateVelocity() {
+		this.scene.physics.velocityFromAngle(this.angle + 180, CONFIG.PACMAN_SPEED, this.body.velocity);
 	}
 
 	/**

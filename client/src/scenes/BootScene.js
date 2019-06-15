@@ -26,6 +26,6 @@ export class BootScene extends Phaser.Scene {
 		//this.load.html('REGISTER_FORM_HTML', '/assets/dom/register-form.html');
 	}
 	create() {
-		this.scene.start(SCENES.GAME);
+		this.scene.start(SCENES.WAITING_FOR_PLAYERS);
 	}
 }

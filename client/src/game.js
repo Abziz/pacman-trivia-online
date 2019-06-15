@@ -2,15 +2,8 @@ import Phaser from 'phaser';
 import { CONFIG } from './constants';
 import { BootScene } from './scenes/BootScene';
 import { GameScene } from './scenes/GameScene';
-import { socket } from './socket';
-import { CLIENT_EVENTS, SERVER_EVENTS } from '../../shared/src/socket-events';
-
-socket.on('connect', () => {
-	socket.emit(CLIENT_EVENTS.GREET, { message: 'Valar morghulis', name: 'John' });
-});
-socket.on(SERVER_EVENTS.GREET_BACK, ({ message }) => {
-	console.warn(message);
-});
+import { MultiPlayerScene } from './scenes/MultiPlayerScene';
+import { WaitingForPlayersScene } from './scenes/WaitingForPlayersScene';
 
 new Phaser.Game({
 	type: Phaser.CANVAS,
@@ -18,12 +11,16 @@ new Phaser.Game({
 	height: CONFIG.HEIGHT,
 	parent: 'body',
 	backgroundColor: '#bbb',
-	scene: [BootScene, GameScene],
+	scene: [BootScene, GameScene, MultiPlayerScene, WaitingForPlayersScene],
 	dom: { createContainer: true },
+	fps: {
+		target: CONFIG.FPS
+
+	},
 	physics: {
 		default: 'arcade',
 		arcade: {
-			debug: true,
-		}
+			fps: CONFIG.FPS
+		},
 	}
 });
