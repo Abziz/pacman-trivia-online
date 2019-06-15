@@ -1,12 +1,14 @@
 import Phaser from 'phaser';
-import { SPRITES, ANIMATIONS, DIRECTIONS } from '../constants';
+import { SPRITES, ANIMATIONS, DIRECTIONS, CONFIG } from '../constants';
 export class Ghost extends Phaser.GameObjects.Sprite {
-	constructor(scene, x = 32 * 8 + 16, y = 32 * 5 + 16) {
-		super(scene, x, y, SPRITES.GHOST);
+	constructor(scene, x = 1, y = 1) {
+		super(scene, 32 * x + 16, 32 * y + 16, SPRITES.GHOST);
 		this.scene.add.existing(this); // add our sprite to the scene
 		this.scene.physics.world.enable(this); // add physics to our sprite	
 		this.createAnimations();
 		this.turning = false;
+		this.direction = DIRECTIONS.UP;
+		this.turn();
 	}
 	/**
 	 * moves the ghost according to the walls layer
@@ -41,14 +43,14 @@ export class Ghost extends Phaser.GameObjects.Sprite {
 		// take one direction at random
 		const { direction } = Phaser.Math.RND.pick(available);
 
-		// check if the ghos is turning allready
+		// check if the ghost is turning allready
 		if (!this.turning) {
 			//if not then check if we need to change the animation / velocity 
 			if (this.direction != direction) {
 				this.body.reset(current.getCenterX(), current.getCenterY());
-				this.scene.physics.velocityFromAngle(direction + 180, 150, this.body.velocity);
-				this.anims.play(`${ANIMATIONS.GHOST}_${direction}`);
+				this.scene.physics.velocityFromAngle(direction + 180, CONFIG.GHOST_SPEED, this.body.velocity);
 				this.direction = direction;
+				this.turn(direction);
 			}
 			//indicate that the ghost is turning and toggle it back after 1/5 of second
 			this.turning = true;
@@ -57,7 +59,11 @@ export class Ghost extends Phaser.GameObjects.Sprite {
 			}, 200);
 		}
 	}
-
+	turn() {
+		if (!this.anims.currentAnim || this.anims.currentAnim.key != `${ANIMATIONS.GHOST}_${this.direction}`) {
+			this.anims.play(`${ANIMATIONS.GHOST}_${this.direction}`);
+		}
+	}
 
 
 	createAnimations() {
