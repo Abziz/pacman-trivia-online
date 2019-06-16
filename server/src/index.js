@@ -4,11 +4,16 @@ const server = require('http').Server(app); // create a server from the express 
 const io = require('socket.io')(server); // integrate socket.io with our server
 const Bundler = require('parcel-bundler'); // parcel bundler
 const bodyParser = require('body-parser'); // body-parser
-const uuid = require('uuid');
+const fs = require('fs'); // file system library for working with files
+const uuid = require('uuid'); // library to generate unique identifiers 
 const itemsApi = require('./api/items');
+const authApi = require('./api/auth');
 const { CLIENT_EVENTS, SERVER_EVENTS } = require('../../shared/src/socket-events');
 const env = process.env.NODE_ENV; // figure out the environment
 const port = process.env.PORT || 3000; // use environment PORT or 3000
+
+// load the users from file at startup
+const users = loadUsers();
 
 /* create a bundler and configure it */
 const bundler = new Bundler('client/src/index.html', {
@@ -18,7 +23,7 @@ const bundler = new Bundler('client/src/index.html', {
 	sourceMaps: env === 'development'
 });
 app.use(bodyParser.json()); // allows json in request body
-app.use('/api', itemsApi); // add the apiRouter to the '/api' route
+app.use('/api', itemsApi, authApi(users)); // add the apiRouter to the '/api' route
 app.use('/assets', express.static('client/assets')); // serve assets folder since parcel doesn't
 app.use('/', bundler.middleware()); // serve our bundled file 
 
@@ -58,7 +63,6 @@ function leave(socketId) {
 /* setup socket.io event handlers here */
 io.on('connection', function (socket) {
 	//client connected to our app setup event listeners
-
 	socket.on(CLIENT_EVENTS.JOIN, () => {
 		const roomId = join(socket.id);
 		socket.join(roomId);
@@ -78,3 +82,13 @@ io.on('connection', function (socket) {
 		}
 	});
 });
+// save users before exit or crash;
+process.on('exit', () => { saveUsers(users); });
+process.on('SIGINT', () => { saveUsers(users); });
+
+function loadUsers() {
+	return JSON.parse(fs.readFileSync('server/data/users.json'));
+}
+function saveUsers(users) {
+	fs.writeFileSync('server/data/users.json', JSON.stringify(users));
+}
